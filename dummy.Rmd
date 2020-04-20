@@ -1,0 +1,40 @@
+---
+title: "dummy"
+author: "LMAS"
+date: "`r format(Sys.Date(),format='%B %d, %Y')`"
+output:  
+  html_document
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+# {.tabset}
+A dummy rmarkdown file to demonstrate to the stackoverflow community that tabsets don't work on my computer even though the same code run on anyone elses works fine.
+
+##Tabulated Data {.tabset}
+```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+library(tidyr)
+library(dplyr)
+library(DT)
+
+cslap<-read.csv("2019.CSLAP.Sample.csv",na.strings=c("","NA"), stringsAsFactors=FALSE)
+cslap<-cslap %>% 
+  select(SAMPLE_NAME,LAKE_NAME,SAMPLE_DATE,INFO_TYPE,LOCATION_ID,LAKE_PROJ_CODE,DATA_PROVIDER,LakeID) %>% 
+  distinct()
+datatable(cslap, extensions = 'Buttons', options = list(dom = 'Bfrtip',buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
+```
+
+##graphed Data {.tabset}
+```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+library(ggplot2)
+cslap<-cslap %>% 
+  group_by(LakeID) %>% 
+  summarize(n=n()) %>% 
+  ungroup()
+print(ggplot(data=cslap,aes(x=LakeID,y=n))+
+  geom_bar(stat="identity", color="black")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  coord_flip())
+```
